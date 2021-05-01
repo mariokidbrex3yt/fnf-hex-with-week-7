@@ -1,0 +1,1117 @@
+// ==UserScript==
+// @name         Hex Mod (Fix)
+// @namespace    none
+// @version      0.1
+// @description  none
+// @author       ๖ۣۜĐɇ Juɳツ + Hoang Tuan GG
+// @match        http://zombs.io/
+// @grant        none
+// ==/UserScript==
+ 
+var Style1 = document.querySelectorAll('.hud-map, .hud-resources, .hud-menu-shop, .hud-menu-party, .hud-menu-settings, .hud-shop-grid .hud-shop-item, .hud-party-link, .hud-party-members, .hud-party-grid, .hud-settings-grid, .hud-toolbar-item, .hud-toolbar-building, .hud-menu-icon, .hud-spell-icon, .hud-intro-form, .hud-intro-guide, .hud-intro-name, .hud-intro-server, .hud-party-tag, .hud-party-share, .hud-chat-input');
+for (var i = 0; i < Style1.length; i++) {
+  Style1[i].style.borderRadius = '1em'; // standard
+  Style1[i].style.MozBorderRadius = '1em'; // Mozilla
+  Style1[i].style.WebkitBorderRadius = '1em'; // WebKitww
+  Style1[i].style.color = "#339CFF";
+  Style1[i].style.border = "2px solid #339CFF";
+}
+ 
+var Style2 = document.querySelectorAll('select, input');
+for (var i = 0; i < Style2.length; i++) {
+  Style2[i].style.borderRadius = '1em'; // standard
+  Style2[i].style.MozBorderRadius = '1em'; // Mozilla
+  Style2[i].style.WebkitBorderRadius = '1em'; // WebKitww
+  Style2[i].style.color = "#339CFF";
+  Style2[i].style.border = "2px solid #339CFF";
+  Style2[i].style.backgroundColor = "#000000";
+}
+var changeHeight = document.createElement("style")
+changeHeight.type = "text/css"
+changeHeight.innerHTML = "@keyframes hud-popup-message {0% { max-height: 0; margin-bottom: 0; opacity: 0; }100% { max-height: 1000px; margin-bottom: 10px; opacity: 1; }} .hud-map .hud-map-spot {display: none;position: absolute;width: 4px;height: 4px;margin: -2px 0 0 -2px;background: #ff5b5b;border-radius: 50%;z-index: 2;} .hud-chat .hud-chat-message { -moz-user-select: text; -khtml-user-select: text; -webkit-user-select: text; -ms-user-select: text; user-select: text; }"
+document.body.appendChild(changeHeight)
+var widget = '<iframe src="https://discordapp.com/widget?id=509768077932625920&amp;theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" style="width: 300px;height: 320px;"></iframe>'
+$("hud-intro-left").innerHTML = widget
+//Messages
+Game.currentGame.ui.getComponent("Chat").onMessageReceived({
+        displayName: "Tuankess 1",
+        message: "Welcome to Hex_World."
+})
+ 
+//Custom Message Maker
+let Settings = ''
+Settings += `
+<h3>Custom Message Maker</h3>
+<hr />
+<input type="search" placeholder="name" maxlength="16" id="myName">
+<input type="search" placeholder="message" maxlength="140" id="myMessage">
+<button onclick="customMessage();">Send</button>
+`
+ 
+document.getElementsByClassName('hud-settings-grid')[0].innerHTML = Settings
+ 
+window.customMessage = function() {
+let name = myName.value
+let message = myMessage.value
+Game.currentGame.ui.getComponent('Chat').onMessageReceived({
+        displayName: name,
+        message: message
+})
+}
+ 
+//Custom Popup Maker
+Settings += `
+<hr />
+<h3>Custom Popup Maker</h3>
+<hr />
+<input type="search" maxlength="50" placeholder="popup" id="myPopup">
+<button onclick="customPopup();">Send</button>
+`
+ 
+document.getElementsByClassName('hud-settings-grid')[0].innerHTML = Settings
+ 
+window.customPopup = function() {
+let popupMsg = myPopup.value
+let popup = Game.currentGame.ui.getComponent("PopupOverlay")
+popup.showHint(popupMsg)
+}
+ 
+//Global Message Sender
+Settings += `
+<hr />
+<h3>Global Message Sender</h3>
+<hr />
+<input type="search" placeholder="message" maxlength="140" id="myGlobalMessage">
+<button onclick="globalMessage();">Send</button>
+`
+ 
+document.getElementsByClassName('hud-settings-grid')[0].innerHTML = Settings
+ 
+window.globalMessage = function() {
+  let globalMessage = myGlobalMessage.value
+  Game.currentGame.network.sendRpc({
+    name: "SendChatMessage",
+    channel: "Global",
+    message: globalMessage
+  })
+}
+//You can crash me
+Settings += `
+<hr />
+<h3>You can crash me</h3>
+<hr />
+<input type="search" placeholder="message" maxlength="140" id="myGlobalMessage">
+<button onclick="globalMessage();">Send</button>
+`
+ 
+document.getElementsByClassName('hud-settings-grid')[0].innerHTML = Settings
+ 
+window.globalMessage = function() {
+  let globalMessage = myGlobalMessage.value
+  Game.currentGame.network.sendRpc({
+    name: "SendChatMessage",
+    channel: "Global",
+    message: "You Can't Crash Me!"
+  })
+}
+//Join Party
+Settings += `
+<hr />
+<h3>Join Parties</h3>
+<hr />
+<input type="text" maxlength="20" placeholder="share key" id="myKey">
+<button onclick="join();">Join</button>
+`
+ 
+document.getElementsByClassName('hud-settings-grid')[0].innerHTML = Settings
+ 
+window.join = function() {
+  let partyKey = myKey.value
+        Game.currentGame.network.sendRpc({
+                name: "JoinPartyByShareKey",
+                partyShareKey: partyKey
+        })
+}
+ 
+//Change Title
+Settings += `
+<hr />
+<h3>Change Title</h3>
+<hr />
+<input type="text" placeholder="name" maxlength="16" id="myTitle">
+<button onclick="change();">Change</button>
+`
+ 
+document.getElementsByClassName('hud-settings-grid')[0].innerHTML = Settings
+ 
+window.change = function() {
+  let title = myTitle.value
+  document.title = title
+}
+ 
+//Auto Build
+Settings += `
+<hr />
+<h3>Auto Build</h3>
+<hr />
+<button onclick="BSB();">Bryan Smith Base</button>
+<button onclick="TB();">Thing Base</button>
+<button onclick="XB();">X Base</button>
+`
+ 
+document.getElementsByClassName('hud-settings-grid')[0].innerHTML = Settings
+ 
+//Auto Build Script
+function $(classname) {
+    let element = document.getElementsByClassName(classname)
+    if (element.length === 1) {
+        return element[0]
+    } else {
+        return element
+    }
+}
+ 
+Storage.prototype.setObject = function(key, value) {
+    this.setItem(key, JSON.stringify(value));
+}
+ 
+Storage.prototype.getObject = function(key) {
+    let value = this.getItem(key);
+    return value && JSON.parse(value);
+}
+ 
+let Auto = {}
+ 
+Auto.GetGoldStash = function() {
+    let entities = Game.currentGame.ui.buildings
+    for (let uid in entities) {
+        if (!entities.hasOwnProperty(uid)) {
+            continue
+        }
+        let obj = entities[uid]
+        if (obj.type == "GoldStash") {
+            return obj
+        }
+    }
+}
+ 
+Auto.PlaceBuilding = function(x, y, building, yaw) {
+    Game.currentGame.network.sendRpc({
+        name: "MakeBuilding",
+        x: x,
+        y: y,
+        type: building,
+        yaw: yaw
+    })
+}
+ 
+Auto.BuildBryanSmithBase = function() {
+    let waitForGoldStash = setInterval(function() {
+        if (document.querySelectorAll("[data-building]")[10].classList[1] == "is-disabled") {
+            let stash = Auto.GetGoldStash();
+            if (stash == undefined) return
+            let stashPosition = {
+                x: stash.x,
+                y: stash.y
+            }
+            clearInterval(waitForGoldStash)
+            Auto.PlaceBuilding(stashPosition.x + 0, stashPosition.y + 0, 'GoldStash', 0);
+            Auto.PlaceBuilding(stashPosition.x + -192, stashPosition.y + -48, 'GoldMine', 0);
+            Auto.PlaceBuilding(stashPosition.x + -192, stashPosition.y + 48, 'GoldMine', 0);
+            Auto.PlaceBuilding(stashPosition.x + -48, stashPosition.y + -192, 'GoldMine', 0);
+            Auto.PlaceBuilding(stashPosition.x + 48, stashPosition.y + -192, 'GoldMine', 0);
+            Auto.PlaceBuilding(stashPosition.x + 192, stashPosition.y + -48, 'GoldMine', 0);
+            Auto.PlaceBuilding(stashPosition.x + 192, stashPosition.y + 48, 'GoldMine', 0);
+            Auto.PlaceBuilding(stashPosition.x + -48, stashPosition.y + 192, 'GoldMine', 0);
+            Auto.PlaceBuilding(stashPosition.x + 48, stashPosition.y + 192, 'GoldMine', 0);
+            Auto.PlaceBuilding(stashPosition.x + -144, stashPosition.y + 288, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -48, stashPosition.y + 288, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 48, stashPosition.y + 288, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 144, stashPosition.y + 288, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -288, stashPosition.y + -48, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -288, stashPosition.y + 48, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -288, stashPosition.y + 144, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -48, stashPosition.y + -288, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 48, stashPosition.y + -288, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 288, stashPosition.y + -144, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 288, stashPosition.y + -48, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 288, stashPosition.y + 48, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 288, stashPosition.y + 144, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 384, stashPosition.y + 144, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 480, stashPosition.y + 144, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 336, stashPosition.y + 240, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 432, stashPosition.y + 240, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 384, stashPosition.y + 336, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 144, stashPosition.y + 384, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 144, stashPosition.y + 480, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 48, stashPosition.y + 576, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 240, stashPosition.y + 432, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -288, stashPosition.y + -144, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -384, stashPosition.y + -144, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -480, stashPosition.y + -144, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -432, stashPosition.y + -240, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -336, stashPosition.y + -240, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -336, stashPosition.y + 240, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -144, stashPosition.y + 384, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -240, stashPosition.y + 432, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -144, stashPosition.y + -288, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -144, stashPosition.y + -384, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -144, stashPosition.y + -480, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -240, stashPosition.y + -432, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -336, stashPosition.y + -384, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 144, stashPosition.y + -288, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 144, stashPosition.y + -384, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 144, stashPosition.y + -480, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 240, stashPosition.y + -432, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 336, stashPosition.y + -384, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 336, stashPosition.y + -240, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 432, stashPosition.y + -240, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 528, stashPosition.y + -240, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 480, stashPosition.y + -144, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 576, stashPosition.y + -144, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 384, stashPosition.y + -144, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 384, stashPosition.y + -48, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 384, stashPosition.y + 48, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 480, stashPosition.y + -48, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 480, stashPosition.y + 48, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 576, stashPosition.y + -48, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 576, stashPosition.y + 48, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 528, stashPosition.y + 240, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 480, stashPosition.y + 336, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 240, stashPosition.y + 528, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 144, stashPosition.y + 576, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 48, stashPosition.y + 384, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -48, stashPosition.y + 384, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 48, stashPosition.y + 480, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -48, stashPosition.y + 480, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -48, stashPosition.y + 576, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -144, stashPosition.y + 480, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -144, stashPosition.y + 576, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -240, stashPosition.y + 528, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -336, stashPosition.y + 480, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -384, stashPosition.y + -48, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -384, stashPosition.y + 48, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -384, stashPosition.y + 144, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -480, stashPosition.y + -48, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -480, stashPosition.y + 48, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -480, stashPosition.y + 144, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -432, stashPosition.y + 240, 'CannonTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -384, stashPosition.y + 336, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 336, stashPosition.y + 480, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -480, stashPosition.y + 336, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -528, stashPosition.y + 240, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 480, stashPosition.y + -336, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -48, stashPosition.y + -480, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -48, stashPosition.y + -384, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 48, stashPosition.y + -384, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 48, stashPosition.y + -480, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 48, stashPosition.y + -576, 'BombTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 144, stashPosition.y + -576, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 240, stashPosition.y + -528, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + 336, stashPosition.y + -480, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -48, stashPosition.y + -576, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -144, stashPosition.y + -576, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -240, stashPosition.y + -528, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -336, stashPosition.y + -480, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -576, stashPosition.y + 48, 'ArrowTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -576, stashPosition.y + 144, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -576, stashPosition.y + -48, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -576, stashPosition.y + -144, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -528, stashPosition.y + -240, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -480, stashPosition.y + -336, 'MagicTower', 0);
+            Auto.PlaceBuilding(stashPosition.x + -144, stashPosition.y + -192, 'Harvester', 0);
+            Auto.PlaceBuilding(stashPosition.x + 144, stashPosition.y + -192, 'Harvester', 0);
+            Auto.PlaceBuilding(stashPosition.x + 144, stashPosition.y + 192, 'Harvester', 0);
+            Auto.PlaceBuilding(stashPosition.x + -144, stashPosition.y + 192, 'Harvester', 0);
+            Auto.PlaceBuilding(stashPosition.x + -648, stashPosition.y + -168, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -648, stashPosition.y + -120, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -648, stashPosition.y + -72, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -648, stashPosition.y + -24, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -648, stashPosition.y + 24, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -648, stashPosition.y + 72, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -648, stashPosition.y + 120, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -648, stashPosition.y + 168, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -696, stashPosition.y + -120, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -696, stashPosition.y + -72, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -696, stashPosition.y + -24, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -696, stashPosition.y + 24, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -696, stashPosition.y + 72, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -696, stashPosition.y + 120, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 600, stashPosition.y + 120, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + 552, stashPosition.y + 120, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + 552, stashPosition.y + 168, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + 600, stashPosition.y + 168, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + 648, stashPosition.y + -168, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 648, stashPosition.y + -120, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 648, stashPosition.y + -72, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 648, stashPosition.y + -24, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 648, stashPosition.y + 24, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 648, stashPosition.y + 72, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 648, stashPosition.y + 120, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 648, stashPosition.y + 168, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 696, stashPosition.y + -120, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 696, stashPosition.y + -72, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 696, stashPosition.y + -24, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 696, stashPosition.y + 24, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 696, stashPosition.y + 72, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 696, stashPosition.y + 120, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -168, stashPosition.y + -648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -120, stashPosition.y + -648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -72, stashPosition.y + -648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -24, stashPosition.y + -648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 24, stashPosition.y + -648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 72, stashPosition.y + -648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 120, stashPosition.y + -648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 168, stashPosition.y + -648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -120, stashPosition.y + -696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -72, stashPosition.y + -696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -24, stashPosition.y + -696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 24, stashPosition.y + -696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 72, stashPosition.y + -696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 120, stashPosition.y + -696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -168, stashPosition.y + 648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -120, stashPosition.y + 648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -72, stashPosition.y + 648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -24, stashPosition.y + 648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 24, stashPosition.y + 648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 72, stashPosition.y + 648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 120, stashPosition.y + 648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 168, stashPosition.y + 648, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -120, stashPosition.y + 696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -72, stashPosition.y + 696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + -24, stashPosition.y + 696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 24, stashPosition.y + 696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 72, stashPosition.y + 696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 120, stashPosition.y + 696, 'Wall', 0);
+            Auto.PlaceBuilding(stashPosition.x + 216, stashPosition.y + 312, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + 216, stashPosition.y + 360, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + 264, stashPosition.y + 360, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + 216, stashPosition.y + -120, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + -216, stashPosition.y + -120, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + -216, stashPosition.y + 120, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + 216, stashPosition.y + 120, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + 216, stashPosition.y + -312, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + 216, stashPosition.y + -360, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + 264, stashPosition.y + -360, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + -216, stashPosition.y + -360, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + -216, stashPosition.y + -312, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + -264, stashPosition.y + -360, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + -216, stashPosition.y + 312, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + -216, stashPosition.y + 360, 'Door', 0);
+            Auto.PlaceBuilding(stashPosition.x + -264, stashPosition.y + 360, 'Door', 0);
+        }
+    }, 100)
+}
+ 
+Auto.BuildThingBase = function() {
+    let waitForGoldStash = setInterval(function() {
+        if (document.querySelectorAll("[data-building]")[10].classList[1] == "is-disabled") {
+            let stash = Auto.GetGoldStash();
+            if (stash == undefined) return
+            let stashPosition = {
+                x: stash.x,
+                y: stash.y
+            }
+            clearInterval(waitForGoldStash)
+            Auto.PlaceBuilding(stashPosition.x + 96, stashPosition.y, "GoldMine", 0)
+            Auto.PlaceBuilding(stashPosition.x, stashPosition.y + 96, "GoldMine", 0)
+            Auto.PlaceBuilding(stashPosition.x + 96, stashPosition.y + 144, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x, stashPosition.y + 192, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 96, stashPosition.y + 240, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 192, stashPosition.y, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 240, stashPosition.y + 96, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 240, stashPosition.y + 192, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 192, stashPosition.y + 336, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 336, stashPosition.y + 192, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 288, stashPosition.y, "GoldMine", 0)
+            Auto.PlaceBuilding(stashPosition.x + 336, stashPosition.y + 96, "GoldMine", 0)
+            Auto.PlaceBuilding(stashPosition.x + 432, stashPosition.y + 192, "GoldMine", 0)
+            Auto.PlaceBuilding(stashPosition.x, stashPosition.y + 288, "GoldMine", 0)
+            Auto.PlaceBuilding(stashPosition.x + 96, stashPosition.y + 336, "GoldMine", 0)
+            Auto.PlaceBuilding(stashPosition.x + 192, stashPosition.y + 432, "GoldMine", 0)
+            Auto.PlaceBuilding(stashPosition.x, stashPosition.y + 384, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 96, stashPosition.y + 432, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 192, stashPosition.y + 528, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 384, stashPosition.y, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 432, stashPosition.y + 96, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 528, stashPosition.y + 192, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 336, stashPosition.y + 336, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 432, stashPosition.y + 432, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 288, stashPosition.y + 480, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 480, stashPosition.y + 288, "ArrowTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 96, stashPosition.y + 528, "CannonTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 192, stashPosition.y + 624, "CannonTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 528, stashPosition.y + 96, "CannonTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 624, stashPosition.y + 192, "CannonTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 480, stashPosition.y, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 576, stashPosition.y, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 624, stashPosition.y + 96, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 720, stashPosition.y + 192, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 672, stashPosition.y + 288, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x, stashPosition.y + 480, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x, stashPosition.y + 576, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 96, stashPosition.y + 624, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 192, stashPosition.y + 720, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 288, stashPosition.y + 672, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 384, stashPosition.y + 672, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 480, stashPosition.y + 624, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 480, stashPosition.y + 528, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 288, stashPosition.y + 576, "BombTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 576, stashPosition.y + 288, "BombTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 384, stashPosition.y + 576, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 264, stashPosition.y + 312, "Door", 0)
+            Auto.PlaceBuilding(stashPosition.x + 264, stashPosition.y + 360, "Door", 0)
+            Auto.PlaceBuilding(stashPosition.x + 264, stashPosition.y + 408, "Door", 0)
+            Auto.PlaceBuilding(stashPosition.x + 312, stashPosition.y + 408, "Door", 0)
+            Auto.PlaceBuilding(stashPosition.x + 360, stashPosition.y + 456, "Door", 0)
+            Auto.PlaceBuilding(stashPosition.x + 360, stashPosition.y + 504, "Door", 0)
+            Auto.PlaceBuilding(stashPosition.x + 408, stashPosition.y + 504, "Door", 0)
+            Auto.PlaceBuilding(stashPosition.x + 360, stashPosition.y + 408, "Door", 0)
+            Auto.PlaceBuilding(stashPosition.x + 288, stashPosition.y + 768, "CannonTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 768, stashPosition.y + 288, "CannonTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 672, stashPosition.y + 384, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 624, stashPosition.y + 480, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 576, stashPosition.y + 384, "MagicTower", 0)
+            Auto.PlaceBuilding(stashPosition.x + 744, stashPosition.y + 360, "Door", 0)
+            Auto.PlaceBuilding(stashPosition.x + 696, stashPosition.y + 456, "Door", 0)
+            Auto.PlaceBuilding(stashPosition.x + 456, stashPosition.y + 696, "Door", 0)
+            Auto.PlaceBuilding(stashPosition.x + 360, stashPosition.y + 744, "Door", 0)
+        }
+    }, 100)
+}
+ 
+Auto.XBase = function() {
+    let waitForGoldStash = setInterval(function() {
+        if (document.querySelectorAll("[data-building]")[10].classList[1] == "is-disabled") {
+            let stash = Auto.GetGoldStash();
+            if (stash == undefined) return
+            let stashPosition = {
+                x: stash.x,
+                y: stash.y
+            }
+            clearInterval(waitForGoldStash)
+            Auto.PlaceBulding(stashPosition.x + 48, stashPosition.y + 192, 'GoldMine', 0)
+            Auto.PlaceBulding(stashPosition.x + -48, stashPosition.y + 192, 'GoldMine', 0)
+            Auto.PlaceBulding(stashPosition.x + -192, stashPosition.y + 48, 'GoldMine', 0)
+            Auto.PlaceBulding(stashPosition.x + -192, stashPosition.y + -48, 'GoldMine', 0)
+            Auto.PlaceBulding(stashPosition.x + 192, stashPosition.y + 48, 'GoldMine', 0)
+            Auto.PlaceBulding(stashPosition.x + 192, stashPosition.y + -48, 'GoldMine', 0)
+            Auto.PlaceBulding(stashPosition.x + -48, stashPosition.y + -192, 'GoldMine', 0)
+            Auto.PlaceBulding(stashPosition.x + 48, stashPosition.y + -192, 'GoldMine', 0)
+            Auto.PlaceBulding(stashPosition.x + -24, stashPosition.y + -120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 24, stashPosition.y + -120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 120, stashPosition.y + -24, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 120, stashPosition.y + 24, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -24, stashPosition.y + 120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 24, stashPosition.y + 120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -120, stashPosition.y + 24, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -120, stashPosition.y + -24, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -144, stashPosition.y + -192, 'Harvester', 0)
+            Auto.PlaceBulding(stashPosition.x + 144, stashPosition.y + -192, 'Harvester', 0)
+            Auto.PlaceBulding(stashPosition.x + -144, stashPosition.y + 192, 'Harvester', 0)
+            Auto.PlaceBulding(stashPosition.x + 144, stashPosition.y + 192, 'Harvester', 0)
+            Auto.PlaceBulding(stashPosition.x + -48, stashPosition.y + -288, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -48, stashPosition.y + -384, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -48, stashPosition.y + -480, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 48, stashPosition.y + -480, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 48, stashPosition.y + -384, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 48, stashPosition.y + -288, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -48, stashPosition.y + -576, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 48, stashPosition.y + -576, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 0, stashPosition.y + -672, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -144, stashPosition.y + -576, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -240, stashPosition.y + -528, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -336, stashPosition.y + -480, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -336, stashPosition.y + -384, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -240, stashPosition.y + -432, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -144, stashPosition.y + -480, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -144, stashPosition.y + -384, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -144, stashPosition.y + -288, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -264, stashPosition.y + -360, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -216, stashPosition.y + -360, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -216, stashPosition.y + -312, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -216, stashPosition.y + -264, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 144, stashPosition.y + -576, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 240, stashPosition.y + -528, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 336, stashPosition.y + -480, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 336, stashPosition.y + -384, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 240, stashPosition.y + -432, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 144, stashPosition.y + -480, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 144, stashPosition.y + -384, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 144, stashPosition.y + -288, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 264, stashPosition.y + -360, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 216, stashPosition.y + -360, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 216, stashPosition.y + -312, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -480, stashPosition.y + -336, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -528, stashPosition.y + -240, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -576, stashPosition.y + -144, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -576, stashPosition.y + -48, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -672, stashPosition.y + 0, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -432, stashPosition.y + -240, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -336, stashPosition.y + -240, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -480, stashPosition.y + -144, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -384, stashPosition.y + -144, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -288, stashPosition.y + -144, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -480, stashPosition.y + -48, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -480, stashPosition.y + 48, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -576, stashPosition.y + 48, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -384, stashPosition.y + -48, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -384, stashPosition.y + 48, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -288, stashPosition.y + 48, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -288, stashPosition.y + -48, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -312, stashPosition.y + 120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -312, stashPosition.y + 168, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -264, stashPosition.y + 168, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -264, stashPosition.y + 120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -264, stashPosition.y + 216, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -216, stashPosition.y + 120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -432, stashPosition.y + 240, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -384, stashPosition.y + 336, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -480, stashPosition.y + 336, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -528, stashPosition.y + 240, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -696, stashPosition.y + 72, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -648, stashPosition.y + 72, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -648, stashPosition.y + 168, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -744, stashPosition.y + -24, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -744, stashPosition.y + 24, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -696, stashPosition.y + -120, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -696, stashPosition.y + -72, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -648, stashPosition.y + -72, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -648, stashPosition.y + -120, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -648, stashPosition.y + -168, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 288, stashPosition.y + -48, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 288, stashPosition.y + -144, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 384, stashPosition.y + -48, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 480, stashPosition.y + -48, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 384, stashPosition.y + 48, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 480, stashPosition.y + 48, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 480, stashPosition.y + 144, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 264, stashPosition.y + 24, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 264, stashPosition.y + 72, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 312, stashPosition.y + 72, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 312, stashPosition.y + 24, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 288, stashPosition.y + 144, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 384, stashPosition.y + 144, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 336, stashPosition.y + 240, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 432, stashPosition.y + 240, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 384, stashPosition.y + 336, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 480, stashPosition.y + 336, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 528, stashPosition.y + 240, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 552, stashPosition.y + 24, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 552, stashPosition.y + 72, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 552, stashPosition.y + 120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 552, stashPosition.y + 168, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -648, stashPosition.y + 120, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -696, stashPosition.y + 120, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -576, stashPosition.y + 144, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -480, stashPosition.y + 144, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -384, stashPosition.y + 144, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -336, stashPosition.y + 240, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 600, stashPosition.y + 120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 600, stashPosition.y + 168, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 648, stashPosition.y + 168, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 600, stashPosition.y + 216, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 600, stashPosition.y + 264, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 648, stashPosition.y + 216, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 648, stashPosition.y + 120, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 696, stashPosition.y + 120, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 696, stashPosition.y + 72, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 696, stashPosition.y + 24, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 624, stashPosition.y + 48, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 576, stashPosition.y + -48, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 672, stashPosition.y + -48, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 576, stashPosition.y + -144, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 528, stashPosition.y + -240, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 480, stashPosition.y + -336, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 432, stashPosition.y + -240, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 336, stashPosition.y + -240, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 480, stashPosition.y + -144, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 384, stashPosition.y + -144, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -144, stashPosition.y + 288, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -48, stashPosition.y + 288, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 48, stashPosition.y + 288, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 144, stashPosition.y + 288, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -48, stashPosition.y + 384, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 48, stashPosition.y + 384, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 144, stashPosition.y + 384, 'BombTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 240, stashPosition.y + 432, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 144, stashPosition.y + 480, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 48, stashPosition.y + 480, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -48, stashPosition.y + 480, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -48, stashPosition.y + 576, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 48, stashPosition.y + 576, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 144, stashPosition.y + 576, 'ArrowTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 240, stashPosition.y + 528, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + 336, stashPosition.y + 480, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -144, stashPosition.y + 384, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -144, stashPosition.y + 480, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -240, stashPosition.y + 432, 'CannonTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -144, stashPosition.y + 576, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -240, stashPosition.y + 528, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -336, stashPosition.y + 480, 'MagicTower', 0)
+            Auto.PlaceBulding(stashPosition.x + -168, stashPosition.y + 648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -120, stashPosition.y + 648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -72, stashPosition.y + 648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -24, stashPosition.y + 648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 24, stashPosition.y + 648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 72, stashPosition.y + 648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 120, stashPosition.y + 648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 168, stashPosition.y + 648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 120, stashPosition.y + 696, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 72, stashPosition.y + 696, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 24, stashPosition.y + 696, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -24, stashPosition.y + 696, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -72, stashPosition.y + 696, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -120, stashPosition.y + 696, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 600, stashPosition.y + -216, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 648, stashPosition.y + -216, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 648, stashPosition.y + -168, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 648, stashPosition.y + -120, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 696, stashPosition.y + -120, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 744, stashPosition.y + -72, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 744, stashPosition.y + -24, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -168, stashPosition.y + -648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -120, stashPosition.y + -648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -120, stashPosition.y + -696, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -72, stashPosition.y + -696, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -72, stashPosition.y + -648, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -24, stashPosition.y + -744, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 24, stashPosition.y + -744, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 72, stashPosition.y + -696, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 72, stashPosition.y + -648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 120, stashPosition.y + -648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 168, stashPosition.y + -648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 216, stashPosition.y + -600, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + 216, stashPosition.y + -648, 'Wall', 0)
+            Auto.PlaceBulding(stashPosition.x + -216, stashPosition.y + -120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 216, stashPosition.y + 120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 216, stashPosition.y + -120, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 264, stashPosition.y + -216, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 216, stashPosition.y + 264, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 216, stashPosition.y + 360, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 264, stashPosition.y + 360, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + 216, stashPosition.y + 312, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -264, stashPosition.y + 360, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -216, stashPosition.y + 360, 'Door', 0)
+            Auto.PlaceBulding(stashPosition.x + -216, stashPosition.y + 312, 'Door', 0)
+        }
+    }, 100)
+}
+ 
+window.BSB = function() {
+  Auto.BuildBryanSmithBase()
+}
+window.TB = function() {
+  Auto.BuildThingBase()
+}
+window.XB = function() {
+  Auto.XBase()
+}
+ 
+//Message Spammer
+Settings += `
+<hr />
+<h3>Message Spammer</h3>
+<hr />
+<input class='message' type='text' placeholder='message'>
+<button class='enable-button'>Enable!</button>
+`
+ 
+document.getElementsByClassName('hud-settings-grid')[0].innerHTML = Settings
+ 
+let msg = document.getElementsByClassName('message')[0]
+let chat = document.getElementsByClassName('hud-chat-input')[0]
+msg.addEventListener("input", function(e) {
+    chat = document.getElementsByClassName('hud-chat-input')[0]
+})
+ 
+let enableButton = document.getElementsByClassName('enable-button')[0]
+let enter = new Event("keyup")
+let chatspam = null
+ 
+function enable() {
+    clearInterval(chatspam)
+    if (chatspam !== null) {
+        chatspam = null
+        enableButton.textContent = "Enable!"
+    } else {
+        chatspam = setInterval(function() {
+            chat.value = msg.value
+            enter.keyCode = 13
+            chat.dispatchEvent(enter)
+            enableButton.textContent = "Disable!"
+        }, 500)
+    }
+}
+ 
+enableButton.addEventListener("click", enable);
+ 
+//Leave Parties
+Settings += `
+<hr />
+<h3>Leave Parties</h3>
+<hr />
+<button onclick="leave();">Leave</button>
+`
+ 
+document.getElementsByClassName('hud-settings-grid')[0].innerHTML = Settings
+ 
+window.leave = function() {
+  Game.currentGame.network.sendRpc({
+    name: "LeaveParty"
+  })
+}
+ 
+//Custom Menu Maker
+Settings += `
+<hr />
+<h3>Custom Menu Maker</h3>
+<hr />
+<input type="text" id="myMenuTitle" placeholder="title">
+<input type="text" id="myMenuMain" placeholder="html">
+<button onclick="myMenuMake();">Make</button>
+`
+ 
+document.getElementsByClassName('hud-settings-grid')[0].innerHTML = Settings
+ 
+window.myMenuMake = function() {
+let html = myMenuMain.value
+let myTitle = myMenuTitle.value
+;(function() {
+    for (let i = 0; i < arguments.length; i++) {
+        let script = document.createElement("script")
+        script.src = arguments[i]
+        document.body.appendChild(script)
+    }
+})("https://cdn.jsdelivr.net/gh/demostanis/ultimate-mod@latest/menu-maker-min.js")
+let myMenu = new menu()
+myMenu.show()
+myMenu.setTitle(myTitle)
+myMenu.addHTML(html)
+}
+ 
+//Auto Raid
+Settings += `
+<hr />
+<h3>Auto Raid</h3>
+<hr />
+<input type="text" class="TFkey" placeholder="share key">
+<button class="TFvalidKey">Valid Key</button>
+<button class="TFbtn">Tower Freeze</button>
+`
+ 
+document.getElementsByClassName('hud-settings-grid')[0].innerHTML = Settings
+ 
+var menu = $("hud-settings-grid");
+for (var i = 0; i < menu.children.length; i++) {
+  var child = menu.children[i];
+  child.addEventListener('click', function() {
+    $("myCustomIcon").click();
+  })
+}
+ 
+$("TFbtn").addEventListener("click", FREEZE);
+var TowerFreeze = null;
+var key;
+$("TFvalidKey").addEventListener("click", function() {
+  key = $("TFkey").value;
+});
+ 
+function FREEZE() {
+  if ($("TFbtn").innerText == "Freeze Towers") {
+    $("TFbtn").innerText = "Unfreeze Towers";
+  } else {
+    $("TFbtn").innerText = "Freeze Towers";
+  }
+  if (TowerFreeze == null) {
+    TowerFreeze = setInterval(function() {
+      Game.currentGame.network.sendRpc({
+        name: "JoinPartyByShareKey",
+        partyShareKey: key
+      });
+      Game.currentGame.network.sendRpc({
+        name: "LeaveParty"
+      })
+    }, 100);
+  } else {
+    clearInterval(TowerFreeze);
+    TowerFreeze = null;
+  }
+}
+Game.currentGame.network.addEnterWorldHandler(() => {
+const placeBuilding = (x, y, building, yaw) => {
+        Game.currentGame.network.sendRpc({
+                name: "MakeBuilding",
+                x: x,
+                y: y,
+                type: building,
+                yaw: yaw
+        })
+             upgradeSlowTraps()
+        sellSlowTraps()
+    upgradeBombs()
+    sellBombs()
+},
+        sellBombs = () => {
+                const entities = Game.currentGame.world.entities
+                for(const uid in entities) {
+                        if(!entities.hasOwnProperty(uid)) continue
+                        const obj = entities[uid]
+                        if(obj.fromTick.model == "ArrowTower") {
+                                Game.currentGame.network.sendRpc({
+                                        "name": "DeleteBuilding",
+                                        "uid": obj.fromTick.uid
+                                })
+ 
+                        }
+                }
+        },
+      sellSlowTraps = () => {
+                const entities = Game.currentGame.world.entities
+                for(const uid in entities) {
+                        if(!entities.hasOwnProperty(uid)) continue
+                        const obj = entities[uid]
+                        if(obj.fromTick.model == "ArrowTower") {
+                                Game.currentGame.network.sendRpc({
+                                        "name": "DeleteBuilding",
+                                        "uid": obj.fromTick.uid
+                                })
+                        }
+                }
+        },
+ 
+        upgradeStash = () => {
+                const entities = Game.currentGame.world.entities
+                for(const uid in entities) {
+                        if(!entities.hasOwnProperty(uid)) continue
+                        const obj = entities[uid]
+                        if(obj.fromTick.model == "GoldStash") {
+                                Game.currentGame.network.sendRpc({
+                                        "name": "UpgradeBuilding",
+                                        "uid": obj.fromTick.uid
+                                })
+                        }
+                }
+        },
+        upgradeBombs = () => {
+                const entities = Game.currentGame.world.entities
+                for(const uid in entities) {
+                        if(!entities.hasOwnProperty(uid)) continue
+                        const obj = entities[uid]
+                        if(obj.fromTick.model == "ArrowTower") {
+                                Game.currentGame.network.sendRpc({
+                                        "name": "UpgradeBuilding",
+                                        "uid": obj.fromTick.uid
+                                })
+                        }
+                }
+        },
+        upgradeSlowTraps = () => {
+                const entities = Game.currentGame.world.entities
+                for(const uid in entities) {
+                        if(!entities.hasOwnProperty(uid)) continue
+                        const obj = entities[uid]
+                        if(obj.fromTick.model == "SlowTrap") {
+                                Game.currentGame.network.sendRpc({
+                                        "name": "UpgradeBuilding",
+                                        "uid": obj.fromTick.uid
+                                })
+                        }
+                }
+        },
+      SellAll = () => {
+                const entities = Game.currentGame.world.entities
+                for(const uid in entities) {
+                        if(!entities.hasOwnProperty(uid)) continue
+                        const obj = entities[uid]
+                        if(["MeleeTower", "MagicTower", "CannonTower", "BombTower", "ArrowTower", "Door", "GoldMine", "Wall", "Harvester", "SlowTrap" || "Wall"].indexOf(obj.fromTick.model) >= 0) {
+                                Game.currentGame.network.sendRpc({
+                                        "name": "DeleteBuilding",
+                                        "uid": obj.fromTick.uid
+                                })
+                        }
+                }
+        },
+        upgradeGoldMines = () => {
+                const entities = Game.currentGame.world.entities
+                for(const uid in entities) {
+                        if(!entities.hasOwnProperty(uid)) continue
+                        const obj = entities[uid]
+                        if(obj.fromTick.model == "GoldMine") {
+                                Game.currentGame.network.sendRpc({
+                                        "name": "UpgradeBuilding",
+                                        "uid": obj.fromTick.uid
+                                })
+                        }
+                }
+        },
+        upgradeBase = () => {
+                const entities = Game.currentGame.world.entities
+                for(const uid in entities) {
+                        if(!entities.hasOwnProperty(uid)) continue
+                        const obj = entities[uid]
+                        if(["MeleeTower", "MagicTower", "CannonTower", "BombTower", "ArrowTower", "Door", "PetCARL", "PetMiner" || "Wall"].indexOf(obj.fromTick.model) >= 0) {
+                                Game.currentGame.network.sendRpc({
+                                        "name": "UpgradeBuilding",
+                                        "uid": obj.fromTick.uid
+                                })
+                        }
+                }
+        },
+        state = {
+                "stopped": true
+        },
+        start = () => state.stopped = false,
+        stop = () => state.stopped = true,
+        grid = document.querySelector(".hud-party-server")
+ 
+grid.innerHTML += `<button class="KodeLlmsaBgcZ">Enable gold generator</button>`
+ 
+Array.prototype.slice.call(grid.childNodes)
+        .find(c => c.classList && c.classList.value == "KodeLlmsaBgcZ")
+                .addEventListener("click", e => {
+        switch(e.target.innerText) {
+                case "Enable gold generator":
+                        e.target.innerText = "Disable gold generator"
+                        start()
+                        break
+                case "Disable gold generator":
+                        e.target.innerText = "Enable gold generator"
+                        stop()
+                        break
+        }
+})
+ 
+Game.currentGame.network.addRpcHandler("LocalBuilding", e => {
+        if(e[0].type === "GoldStash" && !e[0].dead && e[0].tier === 1) {
+                if(state.stopped) return
+                placeBuilding(e[0].x + -48, e[0].y + -1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + 48, e[0].y + -1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + 96, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -96, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -48, e[0].y + 1000000000, "GoldMine", 0)
+                            placeBuilding(e[0].x + -48, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -48, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -48, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -48, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -48, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -48, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -48, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -48, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -48, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -48, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + 48, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + 192, e[0].y + 1000000000, "GoldMine", 0)
+                placeBuilding(e[0].x + -192, e[0].y + 1000000000, "GoldMine", 0)
+                    placeBuilding(e[0].x + -96, e[0].y + 1000000000, "ArrowTower", 0)
+                                placeBuilding(e[0].x + -96, e[0].y + 1000000000, "ArrowTower", 0)
+                                placeBuilding(e[0].x + -96, e[0].y + 1000000000, "ArrowTower", 0)
+                                placeBuilding(e[0].x + -96, e[0].y + 1000000000, "ArrowTower", 0)
+                placeBuilding(e[0].x + 96, e[0].y + 1000000000, "ArrowTower", 0)
+                placeBuilding(e[0].x + 96, e[0].y + -1000000000, "ArrowTower", 0)
+                placeBuilding(e[0].x + -96, e[0].y + -1000000000, "ArrowTower", 0)
+                            placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + 168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + 168, e[0].y + 1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + 1000000000, "Door", 0)
+                const intervalId = setInterval(() => {
+                        if(state.stopped) return
+                placeBuilding(e[0].x + -192, e[0].y + -1000000000, "BombTower", 0)
+                placeBuilding(e[0].x + -192, e[0].y + 1000000000, "BombTower", 0)
+                placeBuilding(e[0].x + -192, e[0].y + 1000000000, "BombTower", 0)
+                placeBuilding(e[0].x + -192, e[0].y + 1000000000, "BombTower", 0)
+                placeBuilding(e[0].x + -192, e[0].y + 1000000000, "BombTower", 0)
+                placeBuilding(e[0].x + -192, e[0].y + 1000000000, "BombTower", 0)
+                placeBuilding(e[0].x + -192, e[0].y + 1000000000, "BombTower", 0)
+                placeBuilding(e[0].x + -192, e[0].y + 1000000000, "BombTower", 0)
+                                    placeBuilding(e[0].x + 192, e[0].y + -1000000000, "CannonTower", 0)
+                                    placeBuilding(e[0].x + 192, e[0].y + -1000000000, "ArrowTower", 0)
+                                    placeBuilding(e[0].x + 192, e[0].y + -1000000000, "ArrowTower", 0)
+                                    placeBuilding(e[0].x + 192, e[0].y + -1000000000, "ArrowTower", 0)
+                                    placeBuilding(e[0].x + 192, e[0].y + -1000000000, "ArrowTower", 0)
+                                    placeBuilding(e[0].x + 192, e[0].y + -1000000000, "ArrowTower", 0)
+                                    placeBuilding(e[0].x + 192, e[0].y + -1000000000, "ArrowTower", 0)
+                                    placeBuilding(e[0].x + 192, e[0].y + -1000000000, "ArrowTower", 0)
+                                    placeBuilding(e[0].x + 192, e[0].y + -1000000000, "ArrowTower", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+                placeBuilding(e[0].x + -168, e[0].y + -1000000000, "Door", 0)
+placeBuilding(e[0].x + -192, e[0].y + -96, "ArrowTower", 0)
+                placeBuilding(e[0].x + -192, e[0].y + 96, "ArrowTower", 50)
+                placeBuilding(e[0].x + 192, e[0].y + 96, "ArrowTower", 100)
+                placeBuilding(e[0].x + 192, e[0].y + -96, "ArrowTower", 150)
+                placeBuilding(e[0].x + 0, e[0].y + -192, "ArrowTower", 200)
+                placeBuilding(e[0].x + 0, e[0].y + 192, "ArrowTower", 250)
+                }, 800)
+const intervalIdr = setInterval(() => {
+                        if(state.stopped) return
+                  upgradeBombs()
+                }, 27)
+                Game.currentGame.network.addEntityUpdateHandler(e => {
+                        if(state.stopped) return
+                        const myUid = Game.currentGame.world.myUid
+                        if(e.entities[myUid].gold >= 5200 && e.entities[myUid].gold <= 10199) {
+                                upgradeStash()
+                                upgradeGoldMines()
+ 
+                                setTimeout(upgradeBase, 5000)
+                        } else if(e.entities[myUid].gold >= 10200 && e.entities[myUid].gold <= 16199) {
+                                upgradeStash()
+                                upgradeGoldMines()
+ 
+                                setTimeout(upgradeBase, 3000)
+                        } else if(e.entities[myUid].gold >= 16200 && e.entities[myUid].gold <= 20199) {
+                                upgradeStash()
+                                upgradeGoldMines()
+ 
+                                setTimeout(upgradeBase, 1000)
+                        } else if(e.entities[myUid].gold >= 20200 && e.entities[myUid].gold <= 32199) {
+                                upgradeStash()
+                                upgradeGoldMines()
+ 
+                                setTimeout(upgradeBase, 500)
+                        } else if(e.entities[myUid].gold >= 32200 && e.entities[myUid].gold <= 100199) {
+                                upgradeStash()
+                                upgradeGoldMines()
+ 
+                                upgradeBase()
+                        } else if(e.entities[myUid].gold >= 100200 && e.entities[myUid].gold <= 400199) {
+                                upgradeStash()
+                                upgradeGoldMines()
+ 
+                                upgradeBase()
+                        } else if(e.entities[myUid].gold >= 400200 && e.entities[myUid].gold <= 1000000) {
+                                upgradeStash()
+                                upgradeGoldMines()
+ 
+                                upgradeBase()
+                        } else if(e.entities[myUid].gold >= 1000000 && e.entities[myUid].gold <= 100000000) {
+                                upgradeStash()
+                                upgradeGoldMines()
+ 
+                                upgradeBase()
+                        }
+                 })
+           }
+     })
+})
